@@ -221,6 +221,14 @@
   .socials a:hover{color:var(--cian);border-color:var(--cian)}
   .socials svg{width:18px;height:18px}
 
+  /* ---------- HERO LETTER ANIMATION ---------- */
+  .hero h1 .ch{display:inline-block;opacity:0;transform:translateY(.55em) rotateX(-45deg);transform-origin:bottom;
+    animation:chIn .6s cubic-bezier(.2,.75,.25,1) both;animation-delay:var(--d,0ms)}
+  .hero h1 .ch.sp{width:.28em}
+  @keyframes chIn{to{opacity:1;transform:none}}
+  .hero h1 .accent{animation:accentGlow 2.8s ease-in-out 1.6s infinite}
+  @keyframes accentGlow{0%,100%{text-shadow:none}50%{text-shadow:0 0 18px rgba(216,16,42,.65),0 0 36px rgba(216,16,42,.35)}}
+
   .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
   .reveal.in{opacity:1;transform:none}
 
@@ -308,6 +316,7 @@
   @media(prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
     .reveal{opacity:1;transform:none}
+    .hero h1 .ch{opacity:1;transform:none}
   }
 </style>
 </head>
@@ -732,6 +741,51 @@
   m3dClose.addEventListener('click',closeModel);
   modal.addEventListener('click',e=>{if(e.target===modal)closeModel()});
   addEventListener('keydown',e=>{if(e.key==='Escape'&&modal.classList.contains('open'))closeModel()});
+
+  /* Hero heading: split into letters for a staggered reveal */
+  const heroH1=document.querySelector('.hero h1');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(heroH1 && !reduce){
+    let i=0;const step=42;
+    function splitNode(node){
+      const frag=document.createDocumentFragment();
+      node.textContent.split('').forEach(chn=>{
+        const s=document.createElement('span');
+        const isSpace=chn===' ';
+        s.className='ch'+(isSpace?' sp':'');
+        s.textContent=isSpace?'\u00A0':chn;
+        s.style.setProperty('--d',(i*step)+'ms');i++;
+        frag.appendChild(s);
+      });
+      node.replaceWith(frag);
+    }
+    Array.from(heroH1.childNodes).forEach(n=>{
+      if(n.nodeType===3){splitNode(n);}
+      else if(n.classList&&n.classList.contains('accent')){
+        Array.from(n.childNodes).forEach(cn=>{if(cn.nodeType===3)splitNode(cn);});
+      }
+    });
+  }
+
+  /* Subtle synthesized UI sounds for the nav (Web Audio, no files) */
+  let actx=null;
+  function blip(freq,dur,gain,type){
+    try{
+      if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();
+      if(actx.state==='suspended')actx.resume();
+      const o=actx.createOscillator(),g=actx.createGain(),t=actx.currentTime;
+      o.type=type||'sine';o.frequency.setValueAtTime(freq,t);
+      o.connect(g);g.connect(actx.destination);
+      g.gain.setValueAtTime(0,t);
+      g.gain.linearRampToValueAtTime(gain,t+0.006);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+      o.start(t);o.stop(t+dur+0.02);
+    }catch(e){}
+  }
+  document.querySelectorAll('#menu a, .nav-cta, .burger').forEach(el=>{
+    el.addEventListener('mouseenter',()=>blip(1480,0.055,0.022,'sine'));
+    el.addEventListener('click',()=>blip(720,0.13,0.05,'triangle'));
+  });
 </script>
 </body>
 </html>
