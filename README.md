@@ -1,6 +1,6 @@
 # 🏁 KITWRX 
 
-Welcome to **KITWRX **, the digital home of a custom automotive workshop dedicated to performance upgrades and one-of-a-kind body kits. From subtle refinements to complete transformations, KITWRX turns every vehicle into a masterpiece on wheels. 🚗✨
+Welcome to **KITWRX**, the digital home of a custom automotive workshop dedicated to performance upgrades and one-of-a-kind body kits. From subtle refinements to complete transformations, KITWRX turns every vehicle into a masterpiece on wheels. 🚗✨
 
 ## 🔥 Features
 
