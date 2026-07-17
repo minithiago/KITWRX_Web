@@ -638,7 +638,7 @@
 </footer>
 
 <!-- MUSIC PLAYER -->
-<audio id="bgm" loop preload="auto"><source src="assets/music.mp3" type="audio/mpeg"></audio>
+<audio id="bgm" loop preload="none"><source src="assets/music.mp3" type="audio/mpeg"></audio>
 <div class="music" id="music" aria-label="Background music player">
   <button class="music-btn" id="music-btn" aria-label="Play or pause music">
     <svg class="ic-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -655,17 +655,13 @@
   const vol=document.getElementById('music-vol');
   function applyVol(v){bgm.volume=v/100;vol.style.setProperty('--vol',v+'%')}
   applyVol(parseInt(vol.value,10));
-  vol.addEventListener('input',()=>{const v=parseInt(vol.value,10);applyVol(v);if(v>0&&bgm.paused)startMusic()});
+  vol.addEventListener('input',()=>{applyVol(parseInt(vol.value,10))});
   function startMusic(){bgm.play().then(()=>musicWrap.classList.add('playing')).catch(()=>{})}
   function pauseMusic(){bgm.pause();musicWrap.classList.remove('playing')}
   musicBtn.addEventListener('click',()=>{bgm.paused?startMusic():pauseMusic()});
   bgm.addEventListener('play',()=>musicWrap.classList.add('playing'));
   bgm.addEventListener('pause',()=>musicWrap.classList.remove('playing'));
-  /* Browsers block audio autoplay until the user interacts; start on the first gesture */
-  startMusic();
-  function firstGesture(){if(bgm.paused)startMusic();removeEventListener('pointerdown',firstGesture);removeEventListener('keydown',firstGesture)}
-  addEventListener('pointerdown',firstGesture);
-  addEventListener('keydown',firstGesture);
+  /* La música solo se reproduce cuando el usuario pulsa el botón de play */
 </script>
 
 <script>
